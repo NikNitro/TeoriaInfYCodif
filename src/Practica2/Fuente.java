@@ -83,12 +83,15 @@ public class Fuente {
 	public double longitudMedia() {
 		double l = 0.0;
 		int j=0;
-		int temp=parametros[0];
+		int []temp=parametros;
 		
 		if (parametersValid){
-            
-			// Tu codigo aqui
-			
+            for(int i = 0; i < probabilidades.length;i++) {
+            //	while(temp.length-1>j && temp[j]==0)
+            //		j++;
+            	l = l + probabilidades[i]*temp[i];
+            //	temp[j]--;
+            }
 		}
 		
 		return l;
@@ -102,8 +105,16 @@ public class Fuente {
 	public int [] reglaDeShannonFano() {
 		
 		int y;
-		
-        // Tu codigo aqui
+		for(int i =0; i< probabilidades.length; i++) {
+			y = 0;
+			int elevado = 1;
+			while(elevado< 1/probabilidades[i]) {
+				y++;
+				elevado = (int)java.lang.Math.pow(2, y);
+			}
+			parametros[i] = y;
+		}
+        
 
 		parametersValid=true;
 		
