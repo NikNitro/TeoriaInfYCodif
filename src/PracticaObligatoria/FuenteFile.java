@@ -32,7 +32,7 @@ long nanoDeCompIni,nanoDeCompFin;
  	 nanoCompIni=System.nanoTime();
 	 lzw.Comprimir(path+file,path+file+compressSufix);
 	 nanoCompFin=System.nanoTime();
-		 
+	 System.out.println(nanoCompIni-nanoCompIni);
 	 nanoDeCompIni=System.nanoTime();
 	 lzw.Descomprimir(path+file+compressSufix,path+file+decompressSufix);
 	 nanoDeCompFin=System.nanoTime();
@@ -105,13 +105,13 @@ public static void main(String[] args) {
 	    	
    	try {
    		
-		 FuenteFile f1= new FuenteFile("Alice.txt");
+   		FuenteFile f1= new FuenteFile("Alice.txt");
         f1.stadistic(true);
 				 
    		/*
 		FuenteFile f2= new FuenteFile("MobyDick.txt");
 		f2.stadistic(true);
-				
+		
 		FuenteFile f3= new FuenteFile("Quixote.txt");
 		f3.stadistic(true);
 		*/

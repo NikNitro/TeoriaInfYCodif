@@ -7,7 +7,7 @@ import java.util.List;
 public class LZW {
 	private String texto;
 	//private List<Integer> codificacion;
-	private static List<String> diccionario;
+	private static ListaDiccionario diccionario;
 	private String descodificacion;
 	private BinaryOut out ;
 	private BinaryIn in;
@@ -20,7 +20,7 @@ public class LZW {
 	}
 	
 	public static void inicializarDiccionario(){
-		diccionario  = new ArrayList<String>(); 
+		diccionario  = new ListaDiccionario(Character.toString((char)0)); 
 		
 		/*
 		diccionario.add("a");
@@ -36,8 +36,8 @@ public class LZW {
 		}
 		*/
 		
-		for(int i =0; i < 256; i++){
-			diccionario.add(Character.toString((char)i));
+		for(int i =1; i < 256; i++){
+			diccionario.insertarNodo(Character.toString((char)i));
 		}
 
 
@@ -63,8 +63,8 @@ public class LZW {
 			boolean seguir = true;
 
 			while(seguir) {
-				
-				if(!diccionario.contains(auxiliar)) {
+				int indexDelAuxiliar = diccionario.contains(auxiliar);
+				if(indexDelAuxiliar==-1) {
 					
 					tamano--;
 
@@ -75,12 +75,15 @@ public class LZW {
 					if(contadorParaElTexto + tamano < array.length){
 						String aux = take(tamano+1, contadorParaElTexto, array );
 			
-						if(!diccionario.contains(aux)) diccionario.add(aux);
+						if(diccionario.contains(aux)==-1) {
+							diccionario.insertarNodo(aux);
+							System.out.println(aux);
+						}
 					}
 					//codificacion.add(diccionario.indexOf(auxiliar)+1);//El +1 es para que nos guarde un numero empezando por 1
-					int size = diccionario.size();
+					int size = diccionario.getSize();
 			
-					out.write(diccionario.indexOf(auxiliar)+1, potenciaMayor(size));
+					out.write(indexDelAuxiliar+1, potenciaMayor(size));
 					contadorParaElTexto += tamano;
 					if(auxiliar.length()>=maximoTamano)
 						maximoTamano++;
@@ -93,7 +96,7 @@ public class LZW {
 			
 		}
 		
-		out.write(0, potenciaMayor(diccionario.size()));
+		out.write(0, potenciaMayor(diccionario.getSize()));
 		out.close();
 	}
 	
@@ -118,6 +121,11 @@ public class LZW {
 		return resultado;
 	}
 	
+	public String mostrarDiccionario() {
+		return diccionario.toString();
+	}
+	
+	
 	public void Descomprimir(String fileIn, String fileOut) throws FileNotFoundException {
 		////System.out.println("Descomprimir");
 		inicializarDiccionario();
@@ -126,7 +134,7 @@ public class LZW {
 	
 		
 
-		int cuantoslee = potenciaMayor(diccionario.size()+2);
+		int cuantoslee = potenciaMayor(diccionario.getSize()+2);
 
 
 		int actualn = in.readInt(cuantoslee);
@@ -141,22 +149,23 @@ public class LZW {
 			 
 			actualn = in.readInt(cuantoslee);
 			if(actualn == 0) break;
-			if(diccionario.size() < actualn){//no está
+			if(diccionario.getSize() < actualn){//no está
 				
-				diccionario.add(w+ w.charAt(0));
+				diccionario.insertarNodo(w+ w.charAt(0));
 				w = diccionario.get(actualn -1);
 
 				
-			}else{ // esta
+			}else{ // está
 				
 				aux = w;
 				w = diccionario.get(actualn -1);
-				diccionario.add(aux+w.charAt(0));
+				diccionario.insertarNodo(aux+w.charAt(0));
+//				System.out.println(aux+w.charAt(0));
 			}
 			descodificacion = descodificacion + w ;
 
 
-			cuantoslee = potenciaMayor(diccionario.size()+2);
+			cuantoslee = potenciaMayor(diccionario.getSize()+2);
 
 		}
 		for(int i =0; i < descodificacion.length(); i++){
@@ -165,16 +174,12 @@ public class LZW {
 		}
 		out.close();
 
-
-
 	}
-	
-	
 	
 	public static void main(String[] std) throws FileNotFoundException {
 		LZW l = new LZW();
 		l.Comprimir("Alice.txt", "salida.txt" );
-
+		//System.out.println(l.mostrarDiccionario());
 		l.Descomprimir("salida.txt", "salidaDes.txt");
 	}
 	
